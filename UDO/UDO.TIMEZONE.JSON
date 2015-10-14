@@ -1,0 +1,56 @@
+*******************************************************************************
+*       Program UDO.TIMEZONE.JSON
+*       Copyright (C) 2015
+*******************************************************************************
+*  Author: MByrne
+*  Created on:  07/20/2015
+*  Description:
+*****************************************************************************
+$INCLUDE UNIVERSE.INCLUDE UDO.H
+
+**
+** Create the URL for Google Time Zone API
+** (you must create your own API key from Google)
+** 
+lat = "36.114647"
+lng = "-115.172813"
+key = "(you must get your own API key)"
+* Google uses a starting date of Jan 1, 1970, expressed in seconds
+ts = (DATE() - (365 * 2) - 1) * 86400
+url = "https://maps.googleapis.com/maps/api/timezone/json?location=":lat:",":lng:"&timestamp=":ts:"&key=":key
+method = "GET"
+hndRequest = ""
+
+st = createSecurityContext(ctx, "TLSv1")
+st = createSecureRequest(url, method, hndRequest, ctx)
+st = submitRequest(hndRequest, 3600, "", headers, data, httpstatus)
+
+IF UDORead(data, UDOFORMAT_JSON, RESTMSG) NE UDO_SUCCESS THEN GOSUB ERR.HANDLER
+
+IF UDOGetProperty(RESTMSG, "dstOffset", dstOffset, UDOTYPE) NE UDO_SUCCESS THEN GOSUB ERR.HANDLER
+IF UDOGetProperty(RESTMSG, "rawOffset", rawOffset, UDOTYPE) NE UDO_SUCCESS THEN GOSUB ERR.HANDLER
+IF UDOGetProperty(RESTMSG, "status", status, UDOTYPE) NE UDO_SUCCESS THEN GOSUB ERR.HANDLER
+IF UDOGetProperty(RESTMSG, "timeZoneId", zoneId, UDOTYPE) NE UDO_SUCCESS THEN GOSUB ERR.HANDLER
+IF UDOGetProperty(RESTMSG, "timeZoneName", zoneName, UDOTYPE) NE UDO_SUCCESS THEN GOSUB ERR.HANDLER
+
+CRT @(-1)
+CRT "Timezone for ":lat:", ":lng
+CRT "------------------------------"
+CRT "DST Offset:     ":dstOffset
+CRT "Raw Offset:     ":rawOffset
+CRT "Status:         ":status
+CRT "Time zone id:   ":zoneId
+CRT "Time zone name: ":zoneName
+CRT
+
+IF UDOFree(RESTMSG) NE UDO_SUCCESS THEN GOSUB ERR.HANDLER
+
+STOP
+
+ERR.HANDLER:
+  ERRCODE = ""; ERRMSG = ""
+  S = UDOGetLastError(ERRCODE, ERRMSG)
+  CRT "UDO ERROR: (":ERRCODE:") ":ERRMSG
+  STOP
+RETURN
+

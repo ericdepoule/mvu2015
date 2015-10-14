@@ -1,0 +1,43 @@
+*******************************************************************************
+*       Program UDO.CREATE.XML
+*       Copyright (C) 2013
+*******************************************************************************
+*  Author: MByrne
+*  Created on :Mar 7, 2013 4:48:46 PM
+*  Description:
+*****************************************************************************
+$INCLUDE UNIVERSE.INCLUDE UDO.H
+
+** Create the main UDO object and set a property
+S = UDOCreate(UDO_OBJECT, UDO.MAIN)
+
+** Create and add the configuration section
+S = UDOCreate(UDO_OBJECT, UDO.CONFIG)
+S = UDOSetProperty(UDO.MAIN, "configuration", UDO.CONFIG)
+
+** Create and add the appSettings section
+S = UDOCreate(UDO_OBJECT, UDO.APP)
+S = UDOSetProperty(UDO.CONFIG, "appSettings", UDO.APP)
+S = UDOCreate(UDO_OBJECT, UDO.ADD)
+S = UDOSetProperty(UDO.APP, "add", UDO.ADD)
+S = UDOSetProperty(UDO.ADD, "key", "AppKey")
+S = UDOSetOption(UDOOPTION_UDO2XML_XMLSTYLE, UDO_XMLSTYLE_ELEM)
+S = UDOSetProperty(UDO.ADD, "value", "AE48CA1F")
+S = UDOFree(UDO.ADD)
+S = UDOFree(UDO.APP)
+
+S = UDOCreate(UDO_OBJECT, UDO.APP)
+S = UDOSetProperty(UDO.CONFIG, "system.web", UDO.APP)
+S = UDOCreate(UDO_OBJECT, UDO.COMPILE)
+S = UDOSetProperty(UDO.APP, "compilation", UDO.COMPILE)
+S = UDOSetProperty(UDO.COMPILE, "debug", "true")
+S = UDOSetProperty(UDO.COMPILE, "strict", "true")
+
+S = UDOWrite(UDO.CONFIG,UDOFORMAT_XML,OUTPUT)
+
+* Free the memory for UDO objects
+* Freeing the top level node release children nodes memory as well
+S = UDOFree(UDO.MAIN)
+
+PRINT OUTPUT
+

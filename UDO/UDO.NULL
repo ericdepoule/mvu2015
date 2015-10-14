@@ -1,0 +1,45 @@
+*******************************************************************************
+*
+*       Program UDO.NULL
+*       
+*       Copyright (C) 2015
+*
+*
+*******************************************************************************
+*
+*  Author: mbyrne
+*  Created on: Jan 20, 2015 1:28:18 PM
+*  Description:
+*
+*
+*****************************************************************************
+$INCLUDE UNIVERSE.INCLUDE UDO.H
+
+data = '{"name":"Michael","city":"Denver","state":null}'
+
+IF UDORead(data, UDOFORMAT_JSON, udo1) NE UDO_SUCCESS THEN GOSUB ERR.HANDLER
+
+IF UDOGetProperty(udo1, "name", name, UDOTYPE) NE UDO_SUCCESS THEN GOSUB ERR.HANDLER
+IF UDOGetProperty(udo1, "city", city, UDOTYPE) NE UDO_SUCCESS THEN GOSUB ERR.HANDLER
+IF UDOGetProperty(udo1, "state", state, UDOTYPE) NE UDO_SUCCESS THEN GOSUB ERR.HANDLER
+
+* Test for special cases true/false/null
+* You can get an "Improper Data Type" error if you try to work with the raw type
+IF UDOTYPE = UDO_NULL THEN state = "{null}"
+IF UDOTYPE = UDO_TRUE THEN state = "{true}"
+IF UDOTYPE = UDO_FALSE THEN state = "{false}"
+
+PRINT "Name:  ":name
+PRINT "City:  ":city
+PRINT "State: ":state
+
+IF UDOFree(udo1) NE UDO_SUCCESS THEN GOSUB ERR.HANDLER
+
+STOP
+
+ERR.HANDLER:
+  ERRCODE = ""; ERRMSG = ""
+  S = UDOGetLastError(ERRCODE, ERRMSG)
+  PRINT "UDO ERROR: (":ERRCODE:") ":ERRMSG
+  STOP
+RETURN

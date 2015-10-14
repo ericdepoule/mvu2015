@@ -1,0 +1,30 @@
+*******************************************************************************
+*       Program UDO.CREATE.JSON
+*       Copyright (C) 2013
+*******************************************************************************
+*  Author: MByrne
+*  Created on :Mar 7, 2013 4:48:46 PM
+*  Description:
+*****************************************************************************
+$INCLUDE UNIVERSE.INCLUDE UDO.H
+
+** Create the main JSON object and set a property
+*    (notice use of number)
+S = UDOCreate(UDO_OBJECT, UDO.MAIN)
+S = UDOSetProperty(UDO.MAIN, "mainprop", 9876)
+
+** Create and add the embedded JSON object
+S = UDOCreate(UDO_OBJECT, UDO.SUB)
+S = UDOSetProperty(UDO.SUB, "subprop1", "detail1")
+S = UDOSetProperty(UDO.SUB, "subprop2", "detail2")
+S = UDOSetProperty(UDO.MAIN, "subobject", UDO.SUB)
+
+* Write the UDO structure into variable OUTPUT in JSON format
+S = UDOWrite(UDO.MAIN,UDOFORMAT_JSON,OUTPUT)
+
+* Free the memory for UDO objects
+* Freeing the top level node release children nodes memory as well
+S = UDOFree(UDO.MAIN)
+
+PRINT OUTPUT
+
