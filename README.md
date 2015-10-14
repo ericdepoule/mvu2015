@@ -4,3 +4,4 @@ Sample code from the Rocket MultiValue University 2015 conference
 
 ## Sessions Included
 * U2 Dynamic Objects (UDO) for JSON/XML
+* AngularJS for Web and Mobile: Please see [http://plnkr.co/edit/QjRho6](http://plnkr.co/edit/QjRho6)
